@@ -1,6 +1,8 @@
 package com.study.stock_control_api.controller;
 
+import com.study.stock_control_api.dto.request.AuthRequestDTO;
 import com.study.stock_control_api.dto.request.UserRequestDTO;
+import com.study.stock_control_api.dto.response.AuthResponseDTO;
 import com.study.stock_control_api.dto.response.UserResponseDTO;
 import com.study.stock_control_api.service.UserService;
 import jakarta.validation.Valid;
@@ -50,5 +52,16 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/auth")
+    public ResponseEntity<AuthResponseDTO> authenticate(@Valid @RequestBody AuthRequestDTO authRequest) {
+        AuthResponseDTO response = userService.authenticate(authRequest);
+
+        if (response.authenticated()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(401).body(response);
+        }
     }
 }
