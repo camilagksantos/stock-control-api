@@ -7,6 +7,7 @@ import com.study.stock_control_api.dto.response.AuthResponseDTO;
 import com.study.stock_control_api.dto.response.UserResponseDTO;
 import com.study.stock_control_api.model.User;
 import com.study.stock_control_api.repository.UserRepository;
+import com.study.stock_control_api.util.JwtUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +19,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -72,15 +75,20 @@ public class UserService {
             User user = userOptional.get();
             UserResponseDTO userResponse = userMapper.toResponseDTO(user);
 
+            // 🆕 Gera o token JWT
+            String token = jwtUtil.generateToken(user.getEmail());
+
             return new AuthResponseDTO(
                     true,
                     "Authentication successful",
-                    userResponse
+                    userResponse,
+                    token
             );
         } else {
             return new AuthResponseDTO(
                     false,
                     "Invalid email or password",
+                    null,
                     null
             );
         }

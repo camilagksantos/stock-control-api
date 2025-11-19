@@ -24,3 +24,7 @@ spring:
 
 server:
   port: 8080
+
+jwt:
+  secret: minha-chave-secreta-super-segura-para-assinar-tokens-jwt-2025
+  expiration: 86400000
